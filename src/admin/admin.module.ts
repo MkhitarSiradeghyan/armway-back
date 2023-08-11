@@ -15,6 +15,6 @@ import { Admin } from '../typeorm/admin.entity';
   ],
   controllers: [AdminController],
   providers: [AdminService, JwtService],
-  exports: [AdminService, CacheModule],
+  exports: [AdminService, CacheModule, JwtModule],
 })
 export class AdminModule {}

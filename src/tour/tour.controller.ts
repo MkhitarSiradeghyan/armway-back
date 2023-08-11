@@ -16,14 +16,24 @@ import { UploadService } from '../upload/upload.service';
 import { slugConvert } from '../utils/slugConvert';
 import { Langauge as Lang } from '../typeorm/lang.enum';
 import { AdminGuard } from 'src/admin/admin.guard';
-
+import { Tour } from 'src/typeorm';
+import * as nodemailer from 'nodemailer';
 
 @Controller('tour')
 export class TourController {
+  private transporter: nodemailer.Transporter;
   constructor(
     private readonly tourService: TourService,
-    private readonly uploadService: UploadService
-  ) {}
+    private readonly uploadService: UploadService,
+  ) {
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+  }
 
   checkBody(body): boolean {
     if (body.title_am === undefined)
@@ -41,13 +51,68 @@ export class TourController {
     return true;
   }
 
+  checkBodyRegister(body): boolean {
+    if (body.email === undefined)
+      return false;
+    if (body.name === undefined)
+      return false;
+    if (body.phone === undefined)
+      return false;
+    if (body.tour_id === undefined)
+      return false;
+    return true;
+  }
+
+  buildContent(body, tour: Tour): string {
+    let content = '';
+    content += `Name: ${body.name}\n`;
+    content += `Email: ${body.email}\n`;
+    content += `Phone: ${body.phone}\n`;
+    content += `Tour: ${tour.translations[0].title} (#${tour.id})\n`;
+    content += `Date: ${tour.date}\n`;
+    return content;
+  }
+
+  /**
+   * @param name 
+   * @param email 
+   * @param phone
+   * @param tour_id
+   *  
+   * @returns { error: null, body: null }
+   * @returns { error: error.msg, body: null }
+   */
+  @Get('register')
+  async register(@Body() body) {
+    try {
+      if (!this.checkBodyRegister(body))
+        throw new Error('Not valid information provided');
+      const tour = await this.tourService.findOne(body.tour_id);
+      if (tour)
+        throw new Error('Not valid information provided');
+      const content = this.buildContent(body, tour);
+      const response = await this.transporter.sendMail({
+        from: `Armway Mailer Agent<${process.env.EMAIL}>`,
+        to: process.env.EMAIL,
+        subject: 'Tour reservation',
+        text: content,
+        // html: '<b>welcome</b>',
+      })
+      return { error: null, body: null };
+    } catch (err) {
+      return { error: err.message, body: null };
+    }
+  }
+
   @Post('create')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], multerConfig))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 50 }], multerConfig))
   async create(@Body() body, @UploadedFiles() files: any) {
     try {
       if (!this.checkBody(body))
         throw new Error('Not valid information provided');
+
+      const date = body.date;
       const titles = [];
       titles[Lang.AM] = body.title_am;
       titles[Lang.RU] = body.title_ru;
@@ -64,6 +129,7 @@ export class TourController {
         descriptions,
         slug,
         images: uploadedFileNames,
+        date
       };
       const tour = await this.tourService.create(data);
       return { error: null, body: tour };

@@ -1,8 +1,11 @@
-import { Controller, Get, Post, Body, Query, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers, Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { AdminService } from './admin.service';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
+import { UseGuards } from '@nestjs/common';
+import { AdminGuard } from './admin.guard';
+import { getPayload } from 'src/utils/getPayload';
 
 @Controller('admin')
 export class AdminController {
@@ -27,7 +30,11 @@ export class AdminController {
 
   async saveLoggedInAdmin(token: string) {
     try {
-      await this.cacheM.set('token', token, 0);
+      let saveLoggedInAdmin : Array<string> = await this.cacheM.get('logged_in');
+      if (saveLoggedInAdmin === undefined)
+        saveLoggedInAdmin = [];
+      saveLoggedInAdmin.push(token);
+      await this.cacheM.set('logged_in', saveLoggedInAdmin, 0);
     } catch (err) {
       throw err;
     }
@@ -67,12 +74,22 @@ export class AdminController {
   }
 
   @Get('logout')
-  async logout(@Query() query) {
+  @UseGuards(AdminGuard)
+  async logout(@Headers() headers) {
     try {
-      const token = query.token;
+      const token = getPayload(headers);
+      console.log(token);
+      
       if (token === undefined)
         throw new Error('token is undefined');
-      await this.cacheM.del('token');
+      let saveLoggedInAdmin : Array<string> = await this.cacheM.get('logged_in');
+      if (saveLoggedInAdmin === undefined)
+        saveLoggedInAdmin = [];
+      const index = saveLoggedInAdmin.indexOf(token);
+      if (index === -1)
+        throw new Error('token is not found');
+      saveLoggedInAdmin.splice(index, 1);
+      await this.cacheM.set('logged_in', saveLoggedInAdmin, 0);
       return { error: null, body: null };
     } catch (err) {
       return { error: err.message, body: null };

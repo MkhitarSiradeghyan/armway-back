@@ -17,7 +17,10 @@ export class Tour extends BaseEntity {
 
     @Column({default: ''})
     slug: string;
- 
+    
+    @Column({ type: 'text', default: '10.10.2023' })
+    date: string;
+
     @OneToMany(() => TourTranslation, (translation) => translation.tour)
     translations: TourTranslation[];
 }

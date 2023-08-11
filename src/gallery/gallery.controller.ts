@@ -49,6 +49,11 @@ export class GalleryController {
   @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('image', multerConfig))
   async create(@Body() body, @UploadedFile() file: any) {
+
+    console.log('bartev', file);
+    console.log('body', body);
+    
+    
     try {
       if (this.checkBody(body) === false)
         throw new Error('some fields are missing');
