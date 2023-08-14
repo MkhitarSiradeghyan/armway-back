@@ -82,7 +82,7 @@ export class TourController {
    * @returns { error: null, body: null }
    * @returns { error: error.msg, body: null }
    */
-  @Get('register')
+  @Post('register')
   async register(@Body() body) {
     try {
       if (!this.checkBodyRegister(body))
