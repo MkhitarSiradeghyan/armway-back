@@ -33,7 +33,7 @@ export class GalleryController {
   checkBody(body): boolean {
     if (body.isVideo === undefined)
       return false;
-    if (body.isVideo == false)
+    if (body.isVideo == true)
       if (body.url === undefined)
         return false;
     if (body.title_am === undefined)
@@ -49,12 +49,7 @@ export class GalleryController {
   @UseGuards(AdminGuard)
   @UseInterceptors(FileInterceptor('image', multerConfig))
   async create(@Body() body, @UploadedFile() file: any) {
-
-    console.log('bartev', file);
-    console.log('body', body);
-    
-    
-    try {
+  try {
       if (this.checkBody(body) === false)
         throw new Error('some fields are missing');
       let url = '';

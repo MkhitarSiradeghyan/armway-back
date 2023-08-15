@@ -8,9 +8,11 @@ import {
   Get,
   Param,
   Delete,
+  Req
+  
 } from '@nestjs/common';
 import { TourService } from './tour.service';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from '../configs/multer.config';
 import { UploadService } from '../upload/upload.service';
 import { slugConvert } from '../utils/slugConvert';
@@ -18,6 +20,9 @@ import { Langauge as Lang } from '../typeorm/lang.enum';
 import { AdminGuard } from 'src/admin/admin.guard';
 import { Tour } from 'src/typeorm';
 import * as nodemailer from 'nodemailer';
+import * as fs from 'fs';
+import * as path from 'path';
+import {Request} from 'express'
 
 @Controller('tour')
 export class TourController {
@@ -47,6 +52,8 @@ export class TourController {
     if (body.description_en === undefined)
       return false;
     if (body.description_ru === undefined)
+      return false;
+    if (body.price === undefined)
       return false;
     return true;
   }
@@ -85,9 +92,11 @@ export class TourController {
   @Post('register')
   async register(@Body() body) {
     try {
+      console.log(body);
+      
       if (!this.checkBodyRegister(body))
         throw new Error('Not valid information provided');
-      const tour = await this.tourService.findOne(body.tour_id);
+      const tour = await this.tourService.findOneBySlug(body.tour_id);
       if (tour)
         throw new Error('Not valid information provided');
       const content = this.buildContent(body, tour);
@@ -104,15 +113,18 @@ export class TourController {
     }
   }
 
+  private imagesPath = path.join(__dirname, '../..', 'public');
+
   @Post('create')
   @UseGuards(AdminGuard)
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 50 }], multerConfig))
+  @UseInterceptors(FilesInterceptor('images', 50, multerConfig))
   async create(@Body() body, @UploadedFiles() files: any) {
     try {
       if (!this.checkBody(body))
         throw new Error('Not valid information provided');
 
       const date = body.date;
+      const price = body.price;
       const titles = [];
       titles[Lang.AM] = body.title_am;
       titles[Lang.RU] = body.title_ru;
@@ -129,7 +141,8 @@ export class TourController {
         descriptions,
         slug,
         images: uploadedFileNames,
-        date
+        date,
+        price
       };
       const tour = await this.tourService.create(data);
       return { error: null, body: tour };

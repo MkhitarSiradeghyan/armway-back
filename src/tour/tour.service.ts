@@ -44,6 +44,7 @@ export class TourService {
             tour.urls = data.images;
             tour.slug = data.slug;
             tour.date = data.date;
+            tour.price = data.price;
             const newtour = await tour.save();
             const found = await this.tourRepository.findOne(
                 { where : { id: newtour.id }, 

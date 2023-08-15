@@ -7,6 +7,8 @@ export class UploadService {
   uploadFiles(files: any): Array<string> {
     // dont know if i should implement some additional logic to upload it properly
     const file_names = [];
+    console.log(files);
+    
     files.forEach(file => {
         file_names.push(file.filename);
     });

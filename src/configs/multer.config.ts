@@ -9,11 +9,11 @@ export const multerConfig = {
       callback(null, uniqueSuffix + '-' + file.originalname);
     },
   }),
-  fileFilter: (req, file, callback) => {
-    if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-        callback(null, true);
-    } else {
-        callback(new Error('Only image files (of type JPG, JPEG, PNG, GIF) are allowed!'), false);
-    }
-  },
+  // fileFilter: (req, file, callback) => {
+  //   if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+  //       callback(null, true);
+  //   } else {
+  //       callback(new Error('Only image files (of type JPG, JPEG, PNG, GIF) are allowed!'), false);
+  //   }
+  // },
 };
