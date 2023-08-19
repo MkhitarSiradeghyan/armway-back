@@ -54,7 +54,7 @@ export class GalleryController {
         throw new Error('some fields are missing');
       let url = '';
       const isVideo = body.isVideo;
-      if (isVideo == false)
+      if (isVideo == true)
         url = body.url;
       else
         url = await file?.filename;

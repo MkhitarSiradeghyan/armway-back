@@ -23,6 +23,20 @@ export class AdminService {
         }
     }
 
+    async changePassword(login: string, password: string): Promise<Admin | undefined> {
+        try {
+            const admin: Admin = await this.adminRepository.findOne({ where : { login } });
+            if (admin) {
+                const hash = await bcrypt.hash(password, 10);
+                admin.password = hash;
+                await this.adminRepository.save(admin);
+                return admin;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
     async comparePassword(password: string, hash: string): Promise<boolean> {
         try {
             return (await bcrypt.compare(password, hash));

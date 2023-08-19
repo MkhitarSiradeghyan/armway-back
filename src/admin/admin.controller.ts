@@ -73,6 +73,36 @@ export class AdminController {
     }
   }
 
+  checkChangePasswordBody(body) {
+    if (body.login === undefined || body.oldPassword === undefined || body.newPassword === undefined)
+      throw new Error('login or oldPassword or newPassword is undefined');
+    if (body.oldPassword === body.newPassword)
+      throw new Error('oldPassword and newPassword are the same');
+  }
+
+  /**
+   * 
+   * @param body login 
+   * @param body oldPassword
+   * @param body newPassword
+   * 
+   * @returns { error: null, body: null } on success
+   * @returns { error: string, body: null } on failure
+   */
+  @Post('change-password')
+  @UseGuards(AdminGuard)
+  async changePassword(@Body() body, @Headers() headers) {
+    try {
+      const login = body.login;
+      const newPassword = body.newPassword;
+      this.checkChangePasswordBody(body);
+      this.adminService.changePassword(login, newPassword);
+      return { error: null, body: null };
+    } catch (err) {
+      return { error: err.message, body: null };
+    }
+  }
+
   @Get('logout')
   @UseGuards(AdminGuard)
   async logout(@Headers() headers) {
