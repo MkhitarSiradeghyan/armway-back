@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SliderTranslation = exports.Slider = exports.GalleryTranslation = exports.Gallery = exports.TourTranslation = exports.Tour = exports.Admin = void 0;
+const admin_entity_1 = require("./admin.entity");
+Object.defineProperty(exports, "Admin", { enumerable: true, get: function () { return admin_entity_1.Admin; } });
+const tour_entity_1 = require("./tour.entity");
+Object.defineProperty(exports, "Tour", { enumerable: true, get: function () { return tour_entity_1.Tour; } });
+const tour_translation_entity_1 = require("./tour-translation.entity");
+Object.defineProperty(exports, "TourTranslation", { enumerable: true, get: function () { return tour_translation_entity_1.TourTranslation; } });
+const gallery_entity_1 = require("./gallery.entity");
+Object.defineProperty(exports, "Gallery", { enumerable: true, get: function () { return gallery_entity_1.Gallery; } });
+const gallery_translation_entity_1 = require("./gallery-translation.entity");
+Object.defineProperty(exports, "GalleryTranslation", { enumerable: true, get: function () { return gallery_translation_entity_1.GalleryTranslation; } });
+const slider_entity_1 = require("./slider.entity");
+Object.defineProperty(exports, "Slider", { enumerable: true, get: function () { return slider_entity_1.Slider; } });
+const slider_translation_entity_1 = require("./slider-translation.entity");
+Object.defineProperty(exports, "SliderTranslation", { enumerable: true, get: function () { return slider_translation_entity_1.SliderTranslation; } });
+const entities = [admin_entity_1.Admin, tour_entity_1.Tour, tour_translation_entity_1.TourTranslation, gallery_entity_1.Gallery, gallery_translation_entity_1.GalleryTranslation, slider_entity_1.Slider, slider_translation_entity_1.SliderTranslation];
+exports.default = entities;
+//# sourceMappingURL=index.js.map

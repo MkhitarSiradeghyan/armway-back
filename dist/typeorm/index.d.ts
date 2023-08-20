@@ -1,0 +1,10 @@
+import { Admin } from "./admin.entity";
+import { Tour } from "./tour.entity";
+import { TourTranslation } from "./tour-translation.entity";
+import { Gallery } from "./gallery.entity";
+import { GalleryTranslation } from "./gallery-translation.entity";
+import { Slider } from "./slider.entity";
+import { SliderTranslation } from "./slider-translation.entity";
+declare const entities: (typeof Admin | typeof TourTranslation | typeof Tour | typeof GalleryTranslation | typeof Gallery | typeof SliderTranslation | typeof Slider)[];
+export { Admin, Tour, TourTranslation, Gallery, GalleryTranslation, Slider, SliderTranslation };
+export default entities;
