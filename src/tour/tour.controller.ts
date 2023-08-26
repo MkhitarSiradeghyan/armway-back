@@ -97,7 +97,7 @@ export class TourController {
       if (!this.checkBodyRegister(body))
         throw new Error('Not valid information provided');
       const tour = await this.tourService.findOneBySlug(body.tour_id);
-      if (tour)
+      if (!tour)
         throw new Error('Not valid information provided');
       const content = this.buildContent(body, tour);
       const response = await this.transporter.sendMail({
