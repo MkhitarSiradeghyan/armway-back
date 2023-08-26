@@ -102,7 +102,7 @@ export class TourController {
       const content = this.buildContent(body, tour);
       const response = await this.transporter.sendMail({
         from: `Armway Mailer Agent<${process.env.EMAIL}>`,
-        to: process.env.EMAIL,
+        to: process.env.MAIL_TO,
         subject: 'Tour reservation',
         text: content,
         // html: '<b>welcome</b>',
